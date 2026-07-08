@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Track your Smart Café order status in real time. Enter your Order ID to check." />
+    <title>Track Order - Smart Café</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>" />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+        .track-form {
+            max-width: 500px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .track-form h2 {
+            color: #2c1810;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .track-form .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .track-form .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2c1810;
+        }
+        .track-form .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e8e0d8;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+        .track-form .form-group input:focus {
+            outline: none;
+            border-color: #d4a373;
+        }
+        .track-form .form-group input.error {
+            border-color: #dc3545;
+        }
+        .track-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #2c1810;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .track-btn:hover {
+            background: #d4a373;
+            color: #2c1810;
+        }
+        .track-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #666;
+        }
+        .order-card {
+            max-width: 600px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: none;
+        }
+        .order-card h2 {
+            color: #2c1810;
+            margin-bottom: 1.5rem;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .status-pending {
+            background: #ffc107;
+            color: #856404;
+        }
+        .status-preparing {
+            background: #17a2b8;
+            color: white;
+        }
+        .status-ready {
+            background: #28a745;
+            color: white;
+        }
+        .status-completed {
+            background: #6c757d;
+            color: white;
+        }
+        .status-cancelled {
+            background: #dc3545;
+            color: white;
+        }
+        .order-field {
+            margin: 0.8rem 0;
+        }
+        .order-field label {
+            font-weight: 600;
+            color: #2c1810;
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+        .order-field span {
+            color: #333;
+        }
+        .order-items {
+            background: #f9f7f4;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e8e0d8;
+        }
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c1810;
+            padding: 0.5rem 0;
+            border-top: 2px solid #2c1810;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+        }
+        .error-msg {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+            text-align: center;
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #d4a373;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .order-id-display {
+            background: #2c1810;
+            color: #d4a373;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-family: monospace;
+            display: inline-block;
+            margin: 0.5rem 0;
+        }
+        .help-text {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+        @media (max-width: 768px) {
+            .track-form, .order-card {
+                padding: 1rem;
+                margin: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <h1>☕ Smart Café</h1>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="order.html">Order</a></li>
+                <li><a href="status.html" class="active">Track Order</a></li>
+                <li><a href="admin.html">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero" style="min-height: 20vh; padding: 2rem 0;">
+        <div class="container">
+            <h2>Track Your Order</h2>
+            <p>Enter your Order ID to check the status ☕</p>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="track-form">
+            <h2>🔍 Find Your Order</h2>
+            <div class="form-group">
+                <label for="orderIdInput">Order ID</label>
+                <input type="text" id="orderIdInput" placeholder="e.g. ORD-1783514182230-72DE4EE5" />
+                <div class="help-text">💡 Your Order ID was sent in the confirmation email</div>
+            </div>
+            <button class="track-btn" id="trackBtn">🔎 Track Order</button>
+            <div class="error-msg" id="trackError"></div>
+        </div>
+
+        <div class="order-card" id="orderResult">
+            <h2>📋 Order Details</h2>
+            <div class="order-field">
+                <label>Order ID</label>
+                <span class="order-id-display" id="resultOrderId"></span>
+            </div>
+            <div class="order-field">
+                <label>Status</label>
+                <span id="resultStatus"></span>
+            </div>
+            <div class="order-field">
+                <label>Customer</label>
+                <span id="resultCustomer"></span>
+            </div>
+            <div class="order-field">
+                <label>Items</label>
+                <div class="order-items" id="resultItems"></div>
+            </div>
+            <div class="order-total">
+                <span>Total:</span>
+                <span id="resultTotal"></span>
+            </div>
+            <div class="order-field" id="resultTableRow" style="display:none;">
+                <label>Table Reservation</label>
+                <span id="resultTable"></span>
+            </div>
+            <div class="order-field" id="resultInstructionsRow" style="display:none;">
+                <label>Special Instructions</label>
+                <span id="resultInstructions"></span>
+            </div>
+            <div class="order-field">
+                <label>Placed At</label>
+                <span id="resultCreatedAt"></span>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>© 2026 Smart Café. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const API_URL = 'https://your-api-id.execute-api.us-east-1.amazonaws.com/prod';
+
+        document.getElementById('trackBtn').addEventListener('click', trackOrder);
+        document.getElementById('orderIdInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') trackOrder();
+        });
+
+        async function trackOrder() {
+            const orderId = document.getElementById('orderIdInput').value.trim();
+            const errorDiv = document.getElementById('trackError');
+            const resultCard = document.getElementById('orderResult');
+            const trackBtn = document.getElementById('trackBtn');
+
+            errorDiv.style.display = 'none';
+            resultCard.style.display = 'none';
+
+            if (!orderId) {
+                errorDiv.textContent = 'Please enter an Order ID';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            trackBtn.disabled = true;
+            trackBtn.innerHTML = '<span class="loading-spinner"></span> Searching...';
+
+            try {
+                const response = await fetch(`${API_URL}?orderId=${encodeURIComponent(orderId)}`);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Order not found');
+                }
+
+                displayOrder(data);
+                resultCard.style.display = 'block';
+                resultCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            } catch (error) {
+                errorDiv.textContent = error.message === 'Order not found'
+                    ? '❌ No order found with that ID. Please check and try again.'
+                    : `❌ ${error.message}`;
+                errorDiv.style.display = 'block';
+            } finally {
+                trackBtn.disabled = false;
+                trackBtn.innerHTML = '🔎 Track Order';
+            }
+        }
+
+        function displayOrder(raw) {
+            // Handle: raw item, {success, orders: [...]}, {success, order: {...}}, {order: {...}}
+            let data = raw;
+            if (data.orders && data.orders.length > 0) data = data.orders[0];
+            else if (data.order) data = data.order;
+
+            console.log('📥 Order data:', data);
+
+            document.getElementById('resultOrderId').textContent = data.orderId || 'N/A';
+            document.getElementById('resultCustomer').textContent = data.customerName || 'N/A';
+
+            const statusEl = document.getElementById('resultStatus');
+            const status = data.orderStatus || 'unknown';
+            statusEl.textContent = status.toUpperCase();
+            statusEl.className = `status-badge status-${status}`;
+
+            const items = data.items || [];
+            const itemsDiv = document.getElementById('resultItems');
+            if (items.length === 0) {
+                itemsDiv.innerHTML = '<div class="order-item" style="color:#999;">No items</div>';
+            } else {
+                itemsDiv.innerHTML = items.map(item => `
+                    <div class="order-item">
+                        <span>${item.name || '?'} x${item.quantity || 0}</span>
+                        <span>$${((item.price || 0) * (item.quantity || 0)).toFixed(2)}</span>
+                    </div>
+                `).join('');
+            }
+
+            const total = data.totalAmount || 0;
+            document.getElementById('resultTotal').textContent = `$${Number(total).toFixed(2)}`;
+
+            const tableRow = document.getElementById('resultTableRow');
+            if (data.tableReservation) {
+                document.getElementById('resultTable').textContent = data.tableReservation;
+                tableRow.style.display = 'block';
+            } else {
+                tableRow.style.display = 'none';
+            }
+
+            const instrRow = document.getElementById('resultInstructionsRow');
+            if (data.specialInstructions) {
+                document.getElementById('resultInstructions').textContent = data.specialInstructions;
+                instrRow.style.display = 'block';
+            } else {
+                instrRow.style.display = 'none';
+            }
+
+            if (data.createdAt) {
+                const date = new Date(data.createdAt);
+                document.getElementById('resultCreatedAt').textContent = date.toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'long', day: 'numeric',
+                    hour: '2-digit', minute: '2-digit'
+                });
+            } else {
+                document.getElementById('resultCreatedAt').textContent = '-';
+            }
+        }
+    </script>
+</body>
+</html>

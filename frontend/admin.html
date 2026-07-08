@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Smart Café admin dashboard — manage orders and track performance." />
+    <title>Admin Dashboard - Smart Café</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>" />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+        /* Admin specific styles */
+        .admin-login {
+            max-width: 400px;
+            margin: 4rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .admin-login h2 {
+            text-align: center;
+            color: #2c1810;
+        }
+        .admin-container {
+            display: none;
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .admin-header h2 {
+            color: #2c1810;
+            margin: 0;
+        }
+        .admin-header-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .logout-btn:hover {
+            background: #c82333;
+        }
+        .refresh-btn {
+            background: #2c1810;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .refresh-btn:hover {
+            background: #d4a373;
+            color: #2c1810;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        .stat-card h3 {
+            font-size: 2rem;
+            margin: 0;
+            color: #2c1810;
+        }
+        .stat-card p {
+            margin: 0.5rem 0 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .stat-card .stat-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stat-total { border-top: 4px solid #2c1810; }
+        .stat-pending { border-top: 4px solid #ffc107; }
+        .stat-preparing { border-top: 4px solid #17a2b8; }
+        .stat-ready { border-top: 4px solid #28a745; }
+        .stat-completed { border-top: 4px solid #6c757d; }
+        .stat-cancelled { border-top: 4px solid #dc3545; }
+        
+        .orders-table {
+            background: white;
+            border-radius: 8px;
+            overflow-x: auto;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .orders-table table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+        .orders-table th {
+            background: #2c1810;
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .orders-table td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #e8e0d8;
+        }
+        .orders-table tr:hover {
+            background: #f9f7f4;
+        }
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .status-pending {
+            background: #ffc107;
+            color: #856404;
+        }
+        .status-preparing {
+            background: #17a2b8;
+            color: white;
+        }
+        .status-ready {
+            background: #28a745;
+            color: white;
+        }
+        .status-completed {
+            background: #6c757d;
+            color: white;
+        }
+        .status-cancelled {
+            background: #dc3545;
+            color: white;
+        }
+        .status-select {
+            padding: 0.3rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            background: white;
+            cursor: pointer;
+        }
+        .status-select:focus {
+            outline: none;
+            border-color: #d4a373;
+        }
+        .analytics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .analytics-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .analytics-card h3 {
+            color: #2c1810;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .revenue-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #28a745;
+            margin: 0;
+        }
+        .popular-list {
+            list-style: none;
+            padding: 0;
+        }
+        .popular-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid #f0ebe5;
+            font-size: 0.95rem;
+        }
+        .popular-list li:last-child {
+            border-bottom: none;
+        }
+        .popular-list .item-count {
+            color: #2c1810;
+            font-weight: 600;
+        }
+        @media (max-width: 600px) {
+            .analytics {
+                grid-template-columns: 1fr;
+            }
+        }
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+        .error-msg {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+        .success-msg {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+        .order-id-clickable {
+            cursor: pointer;
+            color: #2c1810;
+            text-decoration: underline;
+            text-decoration-color: #d4a373;
+        }
+        .order-id-clickable:hover {
+            color: #d4a373;
+        }
+        .items-preview {
+            font-size: 0.85rem;
+            color: #666;
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .no-orders {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+        .no-orders .emoji {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 1rem;
+        }
+        @media (max-width: 768px) {
+            .admin-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .admin-header-actions {
+                justify-content: stretch;
+            }
+            .admin-header-actions button {
+                flex: 1;
+            }
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .orders-table {
+                font-size: 0.8rem;
+            }
+            .orders-table th,
+            .orders-table td {
+                padding: 0.5rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <h1>☕ Smart Café</h1>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="order.html">Order</a></li>
+                <li><a href="status.html">Track Order</a></li>
+                <li><a href="admin.html" class="active">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Login Form -->
+    <div class="container" id="loginContainer">
+        <div class="admin-login">
+            <h2>🔐 Admin Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter admin password" required />
+                </div>
+                <button type="submit" class="submit-btn">Login</button>
+                <p id="loginError" style="color: red; margin-top: 1rem; display: none;">Invalid password!</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div class="admin-container" id="adminContainer">
+        <div class="admin-header">
+            <h2>📊 Order Dashboard</h2>
+            <div class="admin-header-actions">
+                <button class="refresh-btn" onclick="loadOrders(); loadAnalytics();">🔄 Refresh</button>
+                <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats" id="statsContainer">
+            <div class="stat-card stat-total">
+                <h3 id="totalOrders">0</h3>
+                <p>Total Orders</p>
+            </div>
+            <div class="stat-card stat-pending">
+                <h3 id="pendingOrders">0</h3>
+                <p>⏳ Pending</p>
+            </div>
+            <div class="stat-card stat-preparing">
+                <h3 id="preparingOrders">0</h3>
+                <p>🔧 Preparing</p>
+            </div>
+            <div class="stat-card stat-ready">
+                <h3 id="readyOrders">0</h3>
+                <p>✅ Ready</p>
+            </div>
+            <div class="stat-card stat-completed">
+                <h3 id="completedOrders">0</h3>
+                <p>✔️ Completed</p>
+            </div>
+            <div class="stat-card stat-cancelled">
+                <h3 id="cancelledOrders">0</h3>
+                <p>❌ Cancelled</p>
+            </div>
+        </div>
+
+        <!-- Analytics -->
+        <div class="analytics">
+            <div class="analytics-card">
+                <h3>💰 Today's Revenue</h3>
+                <p class="revenue-value" id="todayRevenue">$0.00</p>
+                <p style="margin-top: 0.3rem; color: #666; font-size: 0.85rem;">
+                    <span id="todayOrders">0</span> orders today
+                </p>
+            </div>
+            <div class="analytics-card">
+                <h3>🔥 Most Popular Items</h3>
+                <ul class="popular-list" id="popularItems">
+                    <li style="color: #999; font-style: italic;">No data yet</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Status Message -->
+        <div id="statusMessage" style="display: none;"></div>
+
+        <!-- Orders Table -->
+        <div class="orders-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Email</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Table</th>
+                        <th>Created</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersBody">
+                    <tr>
+                        <td colspan="9" class="loading">Loading orders...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>© 2026 Smart Café. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // 🔥 ADMIN PASSWORD - CHANGE THIS!
+        const ADMIN_PASSWORD = 'admin123';
+        
+        // Your API Gateway URL
+        const API_URL = 'https://your-api-id.execute-api.us-east-1.amazonaws.com/prod';
+        
+        // Check if already logged in
+        if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('adminContainer').style.display = 'block';
+            loadOrders();
+            loadAnalytics();
+        }
+
+        // Login handler
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const errorEl = document.getElementById('loginError');
+            
+            if (password === ADMIN_PASSWORD) {
+                sessionStorage.setItem('adminLoggedIn', 'true');
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('adminContainer').style.display = 'block';
+                errorEl.style.display = 'none';
+                loadOrders();
+                loadAnalytics();
+            } else {
+                errorEl.style.display = 'block';
+                document.getElementById('password').value = '';
+                document.getElementById('password').focus();
+            }
+        });
+
+        // Logout
+        function logout() {
+            sessionStorage.removeItem('adminLoggedIn');
+            document.getElementById('adminContainer').style.display = 'none';
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('password').value = '';
+        }
+
+        // Load orders from API
+        async function loadOrders() {
+            const tbody = document.getElementById('ordersBody');
+            tbody.innerHTML = '<tr><td colspan="9" class="loading">Loading orders...</td></tr>';
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch orders');
+                }
+                
+                const data = await response.json();
+                console.log('📥 Orders data:', data);
+                
+                if (data.success && data.orders) {
+                    displayOrders(data.orders);
+                    updateStats(data.orders, data.stats);
+                    showStatusMessage('success', `✅ Loaded ${data.count} orders successfully!`);
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="9">
+                                <div class="no-orders">
+                                    <span class="emoji">📭</span>
+                                    <p>No orders found yet.</p>
+                                    <p style="font-size: 0.9rem; color: #999;">Orders will appear here once customers place them.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('❌ Error loading orders:', error);
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" style="text-align:center; padding:2rem; color: #dc3545;">
+                            ❌ Error loading orders: ${error.message}
+                            <br /><button onclick="loadOrders()" style="margin-top:10px; padding:0.5rem 1rem; background:#2c1810; color:white; border:none; border-radius:4px; cursor:pointer;">🔄 Retry</button>
+                        </td>
+                    </tr>
+                `;
+                showStatusMessage('error', `❌ Failed to load orders: ${error.message}`);
+            }
+        }
+
+        // Display orders in table
+        function displayOrders(orders) {
+            const tbody = document.getElementById('ordersBody');
+            
+            if (orders.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9">
+                            <div class="no-orders">
+                                <span class="emoji">📭</span>
+                                <p>No orders found.</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = orders.map(order => `
+                <tr>
+                    <td>
+                        <strong class="order-id-clickable" onclick="copyOrderId('${order.orderId}')" title="Click to copy order ID">
+                            ${order.orderId}
+                        </strong>
+                    </td>
+                    <td>${escapeHtml(order.customerName)}</td>
+                    <td>${escapeHtml(order.customerEmail)}</td>
+                    <td>
+                        <div class="items-preview" title="${order.items.map(item => `${item.name} (${item.quantity})`).join(', ')}">
+                            ${order.items.map(item => `${item.name} (${item.quantity})`).join(', ')}
+                        </div>
+                    </td>
+                    <td><strong>$${order.totalAmount.toFixed(2)}</strong></td>
+                    <td>
+                        <span class="status-badge status-${order.orderStatus}">
+                            ${order.orderStatus.toUpperCase()}
+                        </span>
+                    </td>
+                    <td>${order.tableReservation || '-'}</td>
+                    <td>${formatDate(order.createdAt)}</td>
+                    <td>
+                        <select class="status-select" onchange="updateStatus('${order.orderId}', this.value)">
+                            <option value="pending" ${order.orderStatus === 'pending' ? 'selected' : ''}>Pending</option>
+                            <option value="preparing" ${order.orderStatus === 'preparing' ? 'selected' : ''}>Preparing</option>
+                            <option value="ready" ${order.orderStatus === 'ready' ? 'selected' : ''}>Ready</option>
+                            <option value="completed" ${order.orderStatus === 'completed' ? 'selected' : ''}>Completed</option>
+                            <option value="cancelled" ${order.orderStatus === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                        </select>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Update order status
+        async function updateStatus(orderId, newStatus) {
+            // Show loading state on the dropdown
+            const select = event.target;
+            const originalValue = select.value;
+            select.disabled = true;
+            select.style.opacity = '0.6';
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        orderId: orderId,
+                        orderStatus: newStatus
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to update status');
+                }
+                
+                const result = await response.json();
+                console.log('✅ Status updated:', result);
+                
+                // Show success message
+                showStatusMessage('success', `✅ Order ${orderId} updated to ${newStatus.toUpperCase()}`);
+                
+                // Refresh the table
+                await loadOrders();
+                
+            } catch (error) {
+                console.error('❌ Error updating status:', error);
+                showStatusMessage('error', `❌ Failed to update order: ${error.message}`);
+                
+                // Re-enable the select and restore value
+                select.disabled = false;
+                select.style.opacity = '1';
+                select.value = originalValue;
+            }
+        }
+
+        // Update statistics
+        function updateStats(orders, stats) {
+            const total = orders.length;
+            const pending = stats?.pending || orders.filter(o => o.orderStatus === 'pending').length;
+            const preparing = stats?.preparing || orders.filter(o => o.orderStatus === 'preparing').length;
+            const ready = stats?.ready || orders.filter(o => o.orderStatus === 'ready').length;
+            const completed = stats?.completed || orders.filter(o => o.orderStatus === 'completed').length;
+            const cancelled = stats?.cancelled || orders.filter(o => o.orderStatus === 'cancelled').length;
+            
+            document.getElementById('totalOrders').textContent = total;
+            document.getElementById('pendingOrders').textContent = pending;
+            document.getElementById('preparingOrders').textContent = preparing;
+            document.getElementById('readyOrders').textContent = ready;
+            document.getElementById('completedOrders').textContent = completed;
+            document.getElementById('cancelledOrders').textContent = cancelled;
+        }
+
+        // Show status message
+        function showStatusMessage(type, message) {
+            const el = document.getElementById('statusMessage');
+            el.style.display = 'block';
+            el.className = type === 'success' ? 'success-msg' : 'error-msg';
+            el.textContent = message;
+            
+            // Auto-hide after 5 seconds
+            clearTimeout(el._timeout);
+            el._timeout = setTimeout(() => {
+                el.style.display = 'none';
+            }, 5000);
+        }
+
+        // Helper: Escape HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Helper: Format date
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } catch {
+                return dateString;
+            }
+        }
+
+        // Helper: Copy order ID to clipboard
+        function copyOrderId(orderId) {
+            navigator.clipboard.writeText(orderId).then(() => {
+                showStatusMessage('success', `📋 Copied Order ID: ${orderId}`);
+            }).catch(() => {
+                // Fallback: select and copy manually
+                const input = document.createElement('input');
+                input.value = orderId;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                showStatusMessage('success', `📋 Copied Order ID: ${orderId}`);
+            });
+        }
+
+        // Load analytics
+        async function loadAnalytics() {
+            try {
+                const response = await fetch(API_URL.replace('/prod', '/prod/analytics'), {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('todayRevenue').textContent = `$${data.todayRevenue.toFixed(2)}`;
+                    document.getElementById('todayOrders').textContent = data.todayOrders;
+
+                    const list = document.getElementById('popularItems');
+                    if (data.popularItems && data.popularItems.length > 0) {
+                        list.innerHTML = data.popularItems.map(item =>
+                            `<li><span>${item.name}</span> <span class="item-count">${item.count} sold</span></li>`
+                        ).join('');
+                    } else {
+                        list.innerHTML = '<li style="color: #999; font-style: italic;">No orders yet</li>';
+                    }
+                }
+            } catch (e) {
+                console.log('Analytics not available');
+            }
+        }
+
+        // Auto-refresh every 30 seconds
+        let refreshInterval = setInterval(() => {
+            if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+                loadOrders();
+                loadAnalytics();
+            }
+        }, 30000);
+
+        // Stop auto-refresh when tab is hidden (performance optimization)
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                clearInterval(refreshInterval);
+            } else {
+                refreshInterval = setInterval(() => {
+                    if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+                        loadOrders();
+                    }
+                }, 30000);
+            }
+        });
+
+        console.log('📊 Admin dashboard ready!');
+        console.log('🔗 API Endpoint:', API_URL);
+        console.log('💡 Tip: Click on any Order ID to copy it to clipboard');
+    </script>
+</body>
+</html>

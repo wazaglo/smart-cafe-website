@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Place your order at Smart Café. Choose from our menu of coffee, pastries, and breakfast items." />
+    <title>Order - Smart Café</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>" />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+        /* Order form specific styles */
+        .order-form {
+            max-width: 600px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .order-form h2 {
+            color: #2c1810;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2c1810;
+        }
+        .form-group label .required {
+            color: #dc3545;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e8e0d8;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #d4a373;
+        }
+        .form-group input.error,
+        .form-group select.error {
+            border-color: #dc3545;
+        }
+        .form-group .error-message {
+            color: #dc3545;
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+        .form-group .error-message.show {
+            display: block;
+        }
+        .menu-items {
+            background: #f9f7f4;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e8e0d8;
+        }
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        .menu-item select {
+            width: auto;
+            padding: 0.3rem 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            background: white;
+        }
+        .menu-item .item-name {
+            font-weight: 500;
+        }
+        .menu-item .item-price {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #2c1810;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .submit-btn:hover {
+            background: #d4a373;
+            color: #2c1810;
+        }
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #666;
+        }
+        #orderStatus {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+        #orderStatus.success {
+            display: block;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        #orderStatus.error {
+            display: block;
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #d4a373;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .order-id {
+            background: #2c1810;
+            color: #d4a373;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-family: monospace;
+            display: inline-block;
+            margin: 0.5rem 0;
+        }
+        .order-total {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c1810;
+        }
+        .order-summary {
+            background: #f9f7f4;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+        }
+        .order-summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.3rem 0;
+            border-bottom: 1px solid #e8e0d8;
+        }
+        .order-summary-item:last-child {
+            border-bottom: none;
+        }
+        .order-summary-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-top: 2px solid #2c1810;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+        }
+        .help-text {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+        @media (max-width: 768px) {
+            .order-form {
+                padding: 1rem;
+                margin: 1rem;
+            }
+            .menu-item {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            .menu-item select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <h1>☕ Smart Café</h1>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="order.html" class="active">Order</a></li>
+                <li><a href="status.html">Track Order</a></li>
+                <li><a href="admin.html">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <section class="hero" style="min-height: 20vh; padding: 2rem 0;">
+        <div class="container">
+            <h2>Place Your Order</h2>
+            <p>Fresh coffee, made just for you ☕</p>
+        </div>
+    </section>
+
+    <!-- Order Form -->
+    <div class="container">
+        <form id="orderForm" class="order-form" novalidate>
+            <h2>📝 Order Details</h2>
+            
+            <!-- Customer Info -->
+            <div class="form-group">
+                <label for="customerName">Full Name <span class="required">*</span></label>
+                <input type="text" id="customerName" required placeholder="John Doe" />
+                <div class="error-message" id="nameError">Please enter your name</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="customerEmail">Email <span class="required">*</span></label>
+                <input type="email" id="customerEmail" required placeholder="john@example.com" />
+                <div class="error-message" id="emailError">Please enter a valid email address</div>
+            </div>
+            
+            <!-- Menu Items -->
+            <div class="form-group">
+                <label>Select Your Items <span class="required">*</span></label>
+                <div class="menu-items">
+                    <div class="menu-item">
+                        <span><span class="item-name">☕ Latte</span> <span class="item-price">$4.50</span></span>
+                        <select class="item-quantity" data-name="Latte" data-price="4.50">
+                            <option value="0">0</option>
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    <div class="menu-item">
+                        <span><span class="item-name">☕ Cappuccino</span> <span class="item-price">$4.50</span></span>
+                        <select class="item-quantity" data-name="Cappuccino" data-price="4.50">
+                            <option value="0">0</option>
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    <div class="menu-item">
+                        <span><span class="item-name">☕ Espresso</span> <span class="item-price">$3.50</span></span>
+                        <select class="item-quantity" data-name="Espresso" data-price="3.50">
+                            <option value="0" selected>0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    <div class="menu-item">
+                        <span><span class="item-name">🥐 Croissant</span> <span class="item-price">$3.00</span></span>
+                        <select class="item-quantity" data-name="Croissant" data-price="3.00">
+                            <option value="0" selected>0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    <div class="menu-item">
+                        <span><span class="item-name">🍰 Cheesecake</span> <span class="item-price">$5.00</span></span>
+                        <select class="item-quantity" data-name="Cheesecake" data-price="5.00">
+                            <option value="0" selected>0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                    <div class="menu-item">
+                        <span><span class="item-name">🥪 Breakfast Sandwich</span> <span class="item-price">$6.50</span></span>
+                        <select class="item-quantity" data-name="Breakfast Sandwich" data-price="6.50">
+                            <option value="0" selected>0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="error-message" id="itemsError">Please select at least one item</div>
+            </div>
+            
+            <!-- Order Summary -->
+            <div class="form-group">
+                <label>Order Summary</label>
+                <div class="order-summary" id="orderSummary">
+                    <div id="summaryItems">
+                        <div class="order-summary-item" style="color: #999; font-style: italic;">
+                            <span>No items selected</span>
+                            <span>$0.00</span>
+                        </div>
+                    </div>
+                    <div class="order-summary-total">
+                        <span>Total:</span>
+                        <span id="summaryTotal">$0.00</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Table Reservation -->
+            <div class="form-group">
+                <label for="tableReservation">Table Reservation (Optional)</label>
+                <select id="tableReservation">
+                    <option value="">No reservation needed</option>
+                    <option value="Table 1">Table 1 (Window)</option>
+                    <option value="Table 2">Table 2 (Window)</option>
+                    <option value="Table 3">Table 3 (Booth)</option>
+                    <option value="Table 4">Table 4 (Booth)</option>
+                    <option value="Table 5">Table 5 (Outdoor)</option>
+                    <option value="Table 6">Table 6 (Outdoor)</option>
+                </select>
+                <div class="help-text">💡 Select a table if you'd like to reserve a seat</div>
+            </div>
+            
+            <!-- Special Instructions -->
+            <div class="form-group">
+                <label for="specialInstructions">Special Instructions (Optional)</label>
+                <textarea id="specialInstructions" rows="3" placeholder="Any special requests? (e.g., extra foam, no sugar, etc.)"></textarea>
+                <div class="help-text">💡 Let us know how we can make your order perfect</div>
+            </div>
+            
+            <!-- Submit -->
+            <button type="submit" class="submit-btn" id="submitBtn">Place Order ☕</button>
+            
+            <!-- Status Message -->
+            <div id="orderStatus"></div>
+        </form>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>© 2026 Smart Café. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ✅ Your API Gateway URL
+        const API_URL = 'https://your-api-id.execute-api.us-east-1.amazonaws.com/prod';
+        
+        // Update order summary when quantities change
+        document.querySelectorAll('.item-quantity').forEach(select => {
+            select.addEventListener('change', updateSummary);
+        });
+        
+        function updateSummary() {
+            const items = [];
+            let total = 0;
+            
+            document.querySelectorAll('.item-quantity').forEach(select => {
+                const quantity = parseInt(select.value);
+                if (quantity > 0) {
+                    const name = select.dataset.name;
+                    const price = parseFloat(select.dataset.price);
+                    const itemTotal = quantity * price;
+                    total += itemTotal;
+                    items.push({ name, quantity, price, itemTotal });
+                }
+            });
+            
+            const summaryDiv = document.getElementById('summaryItems');
+            const totalSpan = document.getElementById('summaryTotal');
+            
+            if (items.length === 0) {
+                summaryDiv.innerHTML = `
+                    <div class="order-summary-item" style="color: #999; font-style: italic;">
+                        <span>No items selected</span>
+                        <span>$0.00</span>
+                    </div>
+                `;
+            } else {
+                summaryDiv.innerHTML = items.map(item => `
+                    <div class="order-summary-item">
+                        <span>${item.name} x${item.quantity}</span>
+                        <span>$${item.itemTotal.toFixed(2)}</span>
+                    </div>
+                `).join('');
+            }
+            
+            totalSpan.textContent = `$${total.toFixed(2)}`;
+        }
+        
+        // Form submission
+        document.getElementById('orderForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Reset error messages
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+            document.querySelectorAll('.form-group input, .form-group select').forEach(el => el.classList.remove('error'));
+            
+            let isValid = true;
+            
+            // Validate name
+            const name = document.getElementById('customerName').value.trim();
+            if (!name) {
+                document.getElementById('customerName').classList.add('error');
+                document.getElementById('nameError').classList.add('show');
+                isValid = false;
+            }
+            
+            // Validate email
+            const email = document.getElementById('customerEmail').value.trim();
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email || !emailPattern.test(email)) {
+                document.getElementById('customerEmail').classList.add('error');
+                document.getElementById('emailError').classList.add('show');
+                isValid = false;
+            }
+            
+            // Validate items
+            const items = [];
+            document.querySelectorAll('.item-quantity').forEach(select => {
+                const quantity = parseInt(select.value);
+                if (quantity > 0) {
+                    items.push({
+                        name: select.dataset.name,
+                        quantity: quantity,
+                        price: parseFloat(select.dataset.price)
+                    });
+                }
+            });
+            
+            if (items.length === 0) {
+                document.getElementById('itemsError').classList.add('show');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                // Scroll to first error
+                document.querySelector('.error-message.show')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+            
+            // Get status display element
+            const statusDiv = document.getElementById('orderStatus');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Show loading state
+            statusDiv.className = '';
+            statusDiv.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading-spinner"></span> Processing your order...';
+            
+            try {
+                // Collect data
+                const tableReservation = document.getElementById('tableReservation').value;
+                const specialInstructions = document.getElementById('specialInstructions').value.trim();
+                
+                // Build order data
+                const orderData = {
+                    customerName: name,
+                    customerEmail: email,
+                    items: items,
+                    tableReservation: tableReservation || null,
+                    specialInstructions: specialInstructions || ''
+                };
+                
+                console.log('📤 Sending order:', orderData);
+                
+                // Send to API
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderData)
+                });
+                
+                const result = await response.json();
+                console.log('📥 Response:', result);
+                
+                if (!response.ok) {
+                    throw new Error(result.error || result.details || result.message || 'Failed to place order');
+                }
+                
+                // Success!
+                statusDiv.className = 'success';
+                statusDiv.style.display = 'block';
+                statusDiv.innerHTML = `
+                    <h3>✅ Order Placed Successfully!</h3>
+                    <p><strong>Order ID:</strong> <span class="order-id">${result.orderId}</span></p>
+                    <p><strong>Total:</strong> <span class="order-total">$${result.totalAmount.toFixed(2)}</span></p>
+                    <p>📧 A confirmation email has been sent to ${email}</p>
+                    <p>We'll start preparing your order right away! ☕</p>
+                    <p style="margin-top: 10px;">📋 <a href="status.html" style="color: #155724;">Track your order status</a></p>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: #155724;">Thank you for choosing Smart Café!</p>
+                `;
+                
+                // Reset form
+                this.reset();
+                document.querySelectorAll('.item-quantity').forEach(select => select.value = '0');
+                document.getElementById('tableReservation').value = '';
+                document.getElementById('specialInstructions').value = '';
+                updateSummary();
+                
+                // Scroll to status
+                statusDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+            } catch (error) {
+                // Error!
+                console.error('❌ Error:', error);
+                statusDiv.className = 'error';
+                statusDiv.style.display = 'block';
+                statusDiv.innerHTML = `
+                    <h3>❌ Oops! Something went wrong</h3>
+                    <p>${error.message || 'Please try again later.'}</p>
+                    <p style="margin-top: 10px; font-size: 0.9rem;">💡 Make sure all fields are filled correctly.</p>
+                `;
+            } finally {
+                // Reset button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Place Order ☕';
+            }
+        });
+        
+        // Initialize summary
+        updateSummary();
+        
+        console.log('☕ Smart Café order system ready!');
+        console.log('🔗 API Endpoint:', API_URL);
+    </script>
+</body>
+</html>

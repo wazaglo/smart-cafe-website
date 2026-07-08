@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Explore our menu of freshly brewed coffee, pastries, and breakfast items at Smart Café." />
+    <title>Menu - Smart Café</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☕</text></svg>" />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+        .menu-hero { min-height: 40vh; display: flex; align-items: center; }
+        .menu-cta-section { text-align: center; padding: 3rem 0; background: var(--bg-white); }
+        .menu-cta-section h2 { font-family: var(--font-heading); color: var(--primary); margin-bottom: 0.5rem; }
+        .menu-cta-section p { color: var(--text-light); margin-bottom: 1.5rem; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <h1>☕ Smart Café</h1>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="menu.html" class="active">Menu</a></li>
+                <li><a href="order.html">Order</a></li>
+                <li><a href="status.html">Track Order</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero menu-hero">
+        <img class="hero-bg" src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1200&q=80" alt="" loading="lazy" />
+        <div class="container">
+            <h2>Our Menu</h2>
+            <p>Freshly brewed coffee, flaky pastries, and hearty breakfast — all made to order.</p>
+        </div>
+    </section>
+
+    <section class="menu-section section-white">
+        <div class="container">
+            <div class="menu-category fade-in">
+                <h3 class="menu-category-title">☕ Coffee</h3>
+                <div class="menu-grid">
+                    <div class="menu-card fade-in delay-1">
+                        <img class="menu-card-img" src="https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?w=400&q=80" alt="Latte" loading="lazy" />
+                        <div class="menu-card-body">
+                            <div class="menu-card-header">
+                                <span class="menu-card-name">Latte</span>
+                                <span class="menu-card-price">$4.50</span>
+                            </div>
+                            <p class="menu-card-desc">Espresso with steamed milk and a light layer of foam. Smooth and comforting.</p>
+                            <a href="order.html" class="menu-card-order">Add to Order →</a>
+                        </div>
+                    </div>
+                    <div class="menu-card fade-in delay-2">
+                        <img class="menu-card-img" src="https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=400&q=80" alt="Cappuccino" loading="lazy" />
+                        <div class="menu-card-body">
+                            <div class="menu-card-header">
+                                <span class="menu-card-name">Cappuccino</span>
+                                <span class="menu-card-price">$4.50</span>
+                            </div>
+                            <p class="menu-card-desc">Espresso with thick foam and a dusting of cocoa. Bold and velvety.</p>
+                            <a href="order.html" class="menu-card-order">Add to Order →</a>
+                        </div>
+                    </div>
+                    <div class="menu-card fade-in delay-3">
+                        <img class="menu-card-img" src="https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=400&q=80" alt="Espresso" loading="lazy" />
+                        <div class="menu-card-body">
+                            <div class="menu-card-header">
+                                <span class="menu-card-name">Espresso</span>
+                                <span class="menu-card-price">$3.50</span>
+                            </div>
+                            <p class="menu-card-desc">Bold, rich single shot of our signature espresso blend. Pure energy.</p>
+                            <a href="order.html" class="menu-card-order">Add to Order →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-category fade-in">
+                <h3 class="menu-category-title">🥐 Pastries</h3>
+                <div class="menu-grid">
+                    <div class="menu-card fade-in delay-1">
+                        <img class="menu-card-img" src="https://images.unsplash.com/photo-1555507036-ab1f4038024a?w=400&q=80" alt="Croissant" loading="lazy" />
+                        <div class="menu-card-body">
+                            <div class="menu-card-header">
+                                <span class="menu-card-name">Croissant</span>
+                                <span class="menu-card-price">$3.00</span>
+                            </div>
+                            <p class="menu-card-desc">Flaky, buttery pastry baked fresh each morning. Light and golden.</p>
+                            <a href="order.html" class="menu-card-order">Add to Order →</a>
+                        </div>
+                    </div>
+                    <div class="menu-card fade-in delay-2">
+                        <img class="menu-card-img" src="https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=400&q=80" alt="Cheesecake" loading="lazy" />
+                        <div class="menu-card-body">
+                            <div class="menu-card-header">
+                                <span class="menu-card-name">Cheesecake</span>
+                                <span class="menu-card-price">$5.00</span>
+                            </div>
+                            <p class="menu-card-desc">Creamy New York style cheesecake with a seasonal berry compote.</p>
+                            <a href="order.html" class="menu-card-order">Add to Order →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-category fade-in">
+                <h3 class="menu-category-title">🥪 Savory</h3>
+                <div class="menu-grid">
+                    <div class="menu-card fade-in delay-1">
+                        <img class="menu-card-img" src="https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400&q=80" alt="Breakfast Sandwich" loading="lazy" />
+                        <div class="menu-card-body">
+                            <div class="menu-card-header">
+                                <span class="menu-card-name">Breakfast Sandwich</span>
+                                <span class="menu-card-price">$6.50</span>
+                            </div>
+                            <p class="menu-card-desc">Egg, cheese, and bacon on a toasted brioche bun. The perfect start.</p>
+                            <a href="order.html" class="menu-card-order">Add to Order →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="menu-cta-section">
+        <div class="container">
+            <h2 class="fade-in">Ready to Order?</h2>
+            <p class="fade-in delay-1">Skip the line and have your order ready when you arrive.</p>
+            <a href="order.html" class="btn fade-in delay-2">Place Your Order ☕</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <p class="footer-brand">☕ Smart Café</p>
+                    <p class="footer-brand-sub">Fresh coffee, smarter service. Order online and skip the line.</p>
+                </div>
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <a href="index.html">Home</a>
+                    <a href="about.html">About</a>
+                    <a href="menu.html">Menu</a>
+                    <a href="order.html">Order</a>
+                </div>
+                <div class="footer-col">
+                    <h3>Hours</h3>
+                    <p>Mon – Fri: 7am – 7pm</p>
+                    <p>Sat – Sun: 8am – 5pm</p>
+                </div>
+                <div class="footer-col">
+                    <h3>Follow Us</h3>
+                    <a href="#">📷 Instagram</a>
+                    <a href="#">📘 Facebook</a>
+                    <a href="#">🐦 Twitter</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Smart Café. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
