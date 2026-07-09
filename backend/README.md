@@ -91,6 +91,46 @@ const API_URL = 'https://your-api-id.execute-api.us-east-1.amazonaws.com/prod';
 
 ---
 
+## Step 7 (Optional): CloudFront + WAF (Recommended)
+
+Put CloudFront in front of your API Gateway for CDN caching and edge security via AWS WAF — all included in the CloudFront Free plan ($0/month).
+
+### Create CloudFront Distribution
+
+1. Go to **CloudFront** → **Create Distribution**
+2. **Origin domain:** Select your API Gateway (`CafeOrderAPI`)
+3. **Protocol:** HTTPS only
+4. **Cache policy:** `CachingDisabled`
+5. **Origin request policy:** `AllViewerExceptHostHeader`
+6. **Allowed methods:** GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE
+7. Click **Create Distribution**
+
+### Subscribe to Free Plan
+
+1. While viewing your distribution, click the **Pricing Plan** tab
+2. Select **Free** ($0/month — includes WAF, DDoS protection, and Route 53 DNS)
+3. Confirm
+
+### Create and Attach WAF Web ACL
+
+1. Go to **WAF & Shield** → **Web ACLs** → **Create web ACL**
+2. **Scope:** CloudFront (global)
+3. Add managed rule groups:
+   - `AWSManagedRulesCommonRuleSet` — set key rules to **Block** (SQLi, XSS, LFI, RFI)
+   - `AWSManagedRulesAmazonIpReputationList` — block DDoS source IPs
+   - `AWSManagedRulesKnownBadInputsRuleSet` — block path traversal, Log4j
+4. Associate the web ACL with your CloudFront distribution
+
+### Update Frontend
+
+Replace `API_URL` in all `frontend/*.html` files with your CloudFront domain:
+
+```javascript
+const API_URL = 'https://your-cloudfront-domain.cloudfront.net/prod';
+```
+
+---
+
 ## Deploying Lambda Code
 
 After making changes to any Lambda function, deploy it:
@@ -141,22 +181,27 @@ Set these in Lambda console (Configuration → General configuration):
 ## Testing
 
 ```bash
-# Place an order
+# Place an order (via CloudFront)
+curl -X POST https://your-cloudfront-domain.cloudfront.net/prod \
+  -H "Content-Type: application/json" \
+  -d '{"customerName":"Test","customerEmail":"test@example.com","items":[{"name":"Latte","quantity":1,"price":4.50}]}'
+
+# Place an order (direct to API Gateway)
 curl -X POST https://your-api-id.execute-api.us-east-1.amazonaws.com/prod \
   -H "Content-Type: application/json" \
   -d '{"customerName":"Test","customerEmail":"test@example.com","items":[{"name":"Latte","quantity":1,"price":4.50}]}'
 
 # Get all orders
-curl https://your-api-id.execute-api.us-east-1.amazonaws.com/prod
+curl https://your-cloudfront-domain.cloudfront.net/prod
 
 # Get single order
-curl "https://your-api-id.execute-api.us-east-1.amazonaws.com/prod?orderId=ORD-XXXXXXXX-XXXX"
+curl "https://your-cloudfront-domain.cloudfront.net/prod?orderId=ORD-XXXXXXXX-XXXX"
 
 # Update status
-curl -X PUT https://your-api-id.execute-api.us-east-1.amazonaws.com/prod \
+curl -X PUT https://your-cloudfront-domain.cloudfront.net/prod \
   -H "Content-Type: application/json" \
   -d '{"orderId":"ORD-XXXXXXXX-XXXX","orderStatus":"ready"}'
 
 # Analytics
-curl https://your-api-id.execute-api.us-east-1.amazonaws.com/prod/analytics
+curl https://your-cloudfront-domain.cloudfront.net/prod/analytics
 ```

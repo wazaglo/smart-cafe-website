@@ -4,14 +4,18 @@ Quick fixes for common issues when setting up or running Smart Cafe.
 
 ---
 
-## Order form shows "Failed to place order"
+## Order form shows "NetworkError" or "Failed to place order"
 
-**Check:** Is your API Gateway URL correct in `frontend/*.html`?
+**Check:** Is the `API_URL` correct in `frontend/*.html`?
 ```javascript
-const API_URL = 'https://your-api-id.execute-api.us-east-1.amazonaws.com/prod';
+const API_URL = 'https://d2jb7igqyato46.cloudfront.net/prod';
 ```
 
-**Check:** Did you deploy the API after making changes? (Actions → Deploy API → prod)
+**Check:** If using CloudFront, is the distribution deployed and enabled?
+- Go to CloudFront Console → distributions → check status is "Deployed"
+
+**Check:** Did you deploy the API Gateway after making changes?
+- Actions → Deploy API → prod
 
 ---
 
@@ -43,6 +47,15 @@ const API_URL = 'https://your-api-id.execute-api.us-east-1.amazonaws.com/prod';
 
 ---
 
+## WAF blocking legitimate traffic
+
+WAF rules are configured to block common web threats. If the WAF is blocking valid requests:
+1. Go to WAF & Shield Console → Web ACLs → `CreatedByCloudFront-*`
+2. Check the **Sampled requests** tab to see what was blocked
+3. Create an **allowlist rule** (higher priority) for the specific IP or pattern
+
+---
+
 ## Everything deployed but site is blank
 
 **If using Amplify:** Make sure `amplify.yml` in the repo root has:
@@ -56,8 +69,13 @@ artifacts:
 ## Quick Commands
 
 ```bash
-# Test the API
-curl -X POST https://your-api.execute-api.us-east-1.amazonaws.com/prod \
+# Test the API via CloudFront
+curl -X POST https://d2jb7igqyato46.cloudfront.net/prod \
+  -H "Content-Type: application/json" \
+  -d '{"customerName":"Test","customerEmail":"t@t.com","items":[{"name":"Latte","quantity":1,"price":4.5}]}'
+
+# Test the API directly (bypass CloudFront)
+curl -X POST https://zpadh6lluf.execute-api.us-east-1.amazonaws.com/prod \
   -H "Content-Type: application/json" \
   -d '{"customerName":"Test","customerEmail":"t@t.com","items":[{"name":"Latte","quantity":1,"price":4.5}]}'
 
@@ -66,4 +84,7 @@ aws logs tail /aws/lambda/cafe-order-processor --region us-east-1 --follow
 
 # Check database
 aws dynamodb scan --table-name CafeOrders --region us-east-1
+
+# Check WAF blocked requests
+aws wafv2 get-web-acl --name CreatedByCloudFront-f5e1fb9b --scope CLOUDFRONT --id $(aws wafv2 list-web-acls --scope CLOUDFRONT --query 'WebACLs[0].Id' --output text) --region us-east-1
 ```
