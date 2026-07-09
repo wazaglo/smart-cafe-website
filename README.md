@@ -35,7 +35,7 @@ Traffic flows through **CloudFront** (CDN) and **AWS WAF** (web application fire
 ### Live URL
 
 **Frontend:** https://dsss7mj4domm4.amplifyapp.com  
-**API Endpoint:** https://d2jb7igqyato46.cloudfront.net/prod
+**API Endpoint:** Set via Amplify env var `API_URL` (see Getting Started)
 
 ## Project Structure
 
@@ -141,6 +141,11 @@ Follow the step-by-step guide in [backend/README.md](backend/README.md):
 git clone https://github.com/wazaglo/smart-cafe-website.git
 ```
 Push to GitHub → Amplify auto-deploys from `frontend/` directory.
+
+**Important:** Set the `API_URL` Amplify environment variable so the placeholder `__API_URL__` gets replaced with your real endpoint at build time:
+1. Go to **Amplify Console** → your app → **Environment variables**
+2. Add variable: `API_URL` = `https://your-cloudfront-domain.cloudfront.net/prod`
+3. Save and redeploy
 
 ### 4. Configure Credentials
 See [SECURITY.md](SECURITY.md) for Gmail App Password setup and Lambda environment variables.

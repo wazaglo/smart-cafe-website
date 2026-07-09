@@ -2,7 +2,8 @@ version: 1
 frontend:
   phases:
     build:
-      commands: []
+      commands:
+        - sed -i "s|__API_URL__|$API_URL|g" frontend/*.html
   artifacts:
     baseDirectory: frontend
     files:

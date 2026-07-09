@@ -8,8 +8,10 @@ Quick fixes for common issues when setting up or running Smart Cafe.
 
 **Check:** Is the `API_URL` correct in `frontend/*.html`?
 ```javascript
-const API_URL = 'https://d2jb7igqyato46.cloudfront.net/prod';
+const API_URL = '__API_URL__';
 ```
+
+The `__API_URL__` placeholder is replaced at build time by Amplify using the `API_URL` environment variable.
 
 **Check:** If using CloudFront, is the distribution deployed and enabled?
 - Go to CloudFront Console → distributions → check status is "Deployed"
@@ -69,13 +71,8 @@ artifacts:
 ## Quick Commands
 
 ```bash
-# Test the API via CloudFront
-curl -X POST https://d2jb7igqyato46.cloudfront.net/prod \
-  -H "Content-Type: application/json" \
-  -d '{"customerName":"Test","customerEmail":"t@t.com","items":[{"name":"Latte","quantity":1,"price":4.5}]}'
-
-# Test the API directly (bypass CloudFront)
-curl -X POST https://zpadh6lluf.execute-api.us-east-1.amazonaws.com/prod \
+# Test the API
+curl -X POST https://your-cloudfront-domain.cloudfront.net/prod \
   -H "Content-Type: application/json" \
   -d '{"customerName":"Test","customerEmail":"t@t.com","items":[{"name":"Latte","quantity":1,"price":4.5}]}'
 

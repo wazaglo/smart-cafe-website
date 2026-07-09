@@ -38,7 +38,7 @@ Frontend → CloudFront → WAF (SQLi, XSS, DDoS protection) → API Gateway →
 Update the `API_URL` constant in every `.html` file under `frontend/` to your CloudFront URL:
 
 ```javascript
-const API_URL = 'https://d2jb7igqyato46.cloudfront.net/prod';
+const API_URL = 'https://your-cloudfront-domain.cloudfront.net/prod';
 ```
 
 If you forked this project, replace it with your own CloudFront domain. The API Gateway can also be called directly at:
