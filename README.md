@@ -8,11 +8,7 @@ A production-ready, serverless cafe ordering system built on AWS. Customers can 
 
 ## Architecture
 
-```
-                        ┌─ CloudFront ── WAF ──┐
-Users ──> AWS Amplify ──┤                       ├──> API Gateway ──> Lambda ──> DynamoDB
-          (HTML/CSS/JS)  └───────────────────────┘                    └──> Gmail SMTP (Email)
-```
+![Architecture](docs/architecture.png)
 
 Traffic flows through **CloudFront** (CDN) and **AWS WAF** (web application firewall) before reaching the API Gateway. The WAF blocks SQL injection, XSS, path traversal, DDoS IPs, and other common web threats at the edge — without any additional cost under the CloudFront Free plan.
 
