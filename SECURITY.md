@@ -2,7 +2,7 @@
 
 ## What You Need to Configure
 
-All sensitive values are managed via Lambda environment variables — nothing is hardcoded in the source code.
+All sensitive values are managed via Lambda environment variables, nothing is hardcoded in the source code.
 
 ### 1. AWS Account
 
@@ -53,7 +53,7 @@ See `backend/README.md` for full step-by-step API Gateway setup.
 1. Create a CloudFront distribution with API Gateway as origin
 2. Use cache policy: `CachingDisabled`
 3. Use origin request policy: `AllViewerExceptHostHeader`
-4. Subscribe to the **Free flat-rate pricing plan** ($0/month — includes WAF at no extra cost)
+4. Subscribe to the **Free flat-rate pricing plan** ($0/month, includes WAF at no extra cost)
 5. Attach a WAF web ACL with these managed rule groups set to `Block`:
    - `AWSManagedRulesCommonRuleSet` (SQLi, XSS, LFI, RFI)
    - `AWSManagedRulesAmazonIpReputationList` (DDoS IPs)
@@ -69,8 +69,8 @@ Create a table named `CafeOrders` with:
 ### 7. IAM Permissions
 
 The Lambda execution role needs these policies:
-- `AmazonDynamoDBFullAccess` — read/write orders
-- `AWSLambdaBasicExecutionRole` — CloudWatch logs
+- `AmazonDynamoDBFullAccess` - read/write orders
+- `AWSLambdaBasicExecutionRole`. CloudWatch logs
 
 ## Security Best Practices
 

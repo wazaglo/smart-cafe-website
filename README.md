@@ -10,7 +10,7 @@ A production-ready, serverless cafe ordering system built on AWS. Customers can 
 
 ![Architecture](docs/architecture.png)
 
-Traffic flows through **CloudFront** (CDN) and **AWS WAF** (web application firewall) before reaching the API Gateway. The WAF blocks SQL injection, XSS, path traversal, DDoS IPs, and other common web threats at the edge — without any additional cost under the CloudFront Free plan.
+Traffic flows through **CloudFront** (CDN) and **AWS WAF** (web application firewall) before reaching the API Gateway. The WAF blocks SQL injection, XSS, path traversal, DDoS IPs, and other common web threats at the edge, without any additional cost under the CloudFront Free plan.
 
 ### AWS Resources
 
@@ -61,18 +61,18 @@ smart-cafe-website/
 
 ## Features
 
-- **Order Online** — Select items, customize quantities, optional table reservation
-- **Order Tracking** — Enter your Order ID to check status in real-time
-- **Admin Dashboard** — View all orders, search/filter, update status with confirm dialog, see analytics
-- **Email Notifications** — Confirmation to customer + alert to admin on new order
-- **Ready Notification** — Customer gets email when order status is set to "ready"
-- **Analytics** — Daily revenue, popular items breakdown on admin dashboard
-- **WAF Protection** — SQLi, XSS, LFI, RFI, DDoS IPs, and known bad inputs blocked at edge
-- **Expandable Order Details** — Click any order row to view full item breakdown with prices
+- **Order Online**: Select items, customize quantities, optional table reservation
+- **Order Tracking**: Enter your Order ID to check status in real-time
+- **Admin Dashboard**: View all orders, search/filter, update status with confirm dialog, see analytics
+- **Email Notifications**: Confirmation to customer + alert to admin on new order
+- **Ready Notification**: Customer gets email when order status is set to "ready"
+- **Analytics**: Daily revenue, popular items breakdown on admin dashboard
+- **WAF Protection**: SQLi, XSS, LFI, RFI, DDoS IPs, and known bad inputs blocked at edge
+- **Expandable Order Details**: Click any order row to view full item breakdown with prices
 
 ## API Endpoints
 
-### POST / — Place Order
+### POST /: Place Order
 ```json
 { "customerName": "John Doe", "customerEmail": "john@example.com",
   "items": [{ "name": "Latte", "quantity": 2, "price": 4.50 }],
@@ -80,18 +80,18 @@ smart-cafe-website/
 ```
 **Response:** `{ "orderId": "ORD-...", "totalAmount": 9.00 }`
 
-### GET / — Get Orders
-- `GET /` — List all orders (newest first)
-- `GET /?orderId=ORD-...` — Look up single order
-- `GET /?status=pending` — Filter by status
+### GET /: Get Orders
+- `GET /`. List all orders (newest first)
+- `GET /?orderId=ORD-...`. Look up single order
+- `GET /?status=pending`. Filter by status
 
-### PUT / — Update Status
+### PUT /: Update Status
 ```json
 { "orderId": "ORD-...", "orderStatus": "ready" }
 ```
 Triggers "ready for pickup" email to customer.
 
-### GET /analytics — Stats
+### GET /analytics: Stats
 Returns total revenue, today's revenue, top 5 popular items, status breakdown.
 
 ## DynamoDB Schema
@@ -128,7 +128,7 @@ Follow the step-by-step guide in [backend/README.md](backend/README.md):
 ### 2. Set Up CloudFront + WAF (Optional but Recommended)
 1. Create a CloudFront distribution with API Gateway as origin
 2. Use `CachingDisabled` cache policy and `AllViewerExceptHostHeader` origin request policy
-3. Subscribe to the CloudFront **Free flat-rate pricing plan** ($0/month — includes WAF)
+3. Subscribe to the CloudFront **Free flat-rate pricing plan** ($0/month, includes WAF)
 4. Attach a WAF web ACL with managed rule groups set to `Block`
 5. Update `API_URL` in `frontend/*.html` to your CloudFront domain
 

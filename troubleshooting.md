@@ -24,9 +24,9 @@ The `__API_URL__` placeholder is replaced at build time by Amplify using the `AP
 ## Orders not saving to DynamoDB
 
 **Check Lambda logs** (CloudWatch) for errors like:
-- `"Float types are not supported"` — Convert floats to `Decimal(str(value))`
-- `"NoneType has no attribute strip"` — Handle `null` fields with `(val or '').strip()`
-- `"Task timed out"` — Increase Lambda timeout to 30 seconds in Configuration
+- `"Float types are not supported"`. Convert floats to `Decimal(str(value))`
+- `"NoneType has no attribute strip"`. Handle `null` fields with `(val or '').strip()`
+- `"Task timed out"`. Increase Lambda timeout to 30 seconds in Configuration
 
 ---
 

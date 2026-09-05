@@ -28,7 +28,7 @@ This directory contains the Lambda functions for the Smart Cafe backend. Each su
 
 Your API already has a root path `/`. You need to attach these methods:
 
-#### POST / — Place Order
+#### POST /: Place Order
 1. Select `/` resource → **Actions** → **Create Method**
 2. Method: **POST** → checkmark
 3. Integration type: **Lambda Function**
@@ -37,7 +37,7 @@ Your API already has a root path `/`. You need to attach these methods:
 6. **Lambda Function:** `cafe-order-processor`
 7. Click **Save** → **OK** (to add Lambda permission)
 
-#### GET / — Get Orders
+#### GET /: Get Orders
 1. Select `/` resource → **Actions** → **Create Method**
 2. Method: **GET** → checkmark
 3. Integration type: **Lambda Function**
@@ -45,7 +45,7 @@ Your API already has a root path `/`. You need to attach these methods:
 5. **Lambda Function:** `get-orders`
 6. Click **Save** → **OK**
 
-#### PUT / — Update Order Status
+#### PUT /: Update Order Status
 1. Select `/` resource → **Actions** → **Create Method**
 2. Method: **PUT** → checkmark
 3. Integration type: **Lambda Function**
@@ -93,7 +93,7 @@ const API_URL = 'https://your-api-id.execute-api.us-east-1.amazonaws.com/prod';
 
 ## Step 7 (Optional): CloudFront + WAF (Recommended)
 
-Put CloudFront in front of your API Gateway for CDN caching and edge security via AWS WAF — all included in the CloudFront Free plan ($0/month).
+Put CloudFront in front of your API Gateway for CDN caching and edge security via AWS WAF, all included in the CloudFront Free plan ($0/month).
 
 ### Create CloudFront Distribution
 
@@ -108,7 +108,7 @@ Put CloudFront in front of your API Gateway for CDN caching and edge security vi
 ### Subscribe to Free Plan
 
 1. While viewing your distribution, click the **Pricing Plan** tab
-2. Select **Free** ($0/month — includes WAF, DDoS protection, and Route 53 DNS)
+2. Select **Free** ($0/month, includes WAF, DDoS protection, and Route 53 DNS)
 3. Confirm
 
 ### Create and Attach WAF Web ACL
@@ -116,9 +116,9 @@ Put CloudFront in front of your API Gateway for CDN caching and edge security vi
 1. Go to **WAF & Shield** → **Web ACLs** → **Create web ACL**
 2. **Scope:** CloudFront (global)
 3. Add managed rule groups:
-   - `AWSManagedRulesCommonRuleSet` — set key rules to **Block** (SQLi, XSS, LFI, RFI)
-   - `AWSManagedRulesAmazonIpReputationList` — block DDoS source IPs
-   - `AWSManagedRulesKnownBadInputsRuleSet` — block path traversal, Log4j
+   - `AWSManagedRulesCommonRuleSet` - set key rules to **Block** (SQLi, XSS, LFI, RFI)
+   - `AWSManagedRulesAmazonIpReputationList` - block DDoS source IPs
+   - `AWSManagedRulesKnownBadInputsRuleSet` - block path traversal, Log4j
 4. Associate the web ACL with your CloudFront distribution
 
 ### Update Frontend
