@@ -48,11 +48,11 @@ smart-cafe-website/
     app.js                          Shared JavaScript
   backend/                          # Serverless backend
     lambda/
-      cafe-order-processor/         POST / — place order + email
-      get-orders/                   GET / — list/search orders
-      update-order-status/          PUT / — update status + ready notification
-      get-analytics/                GET /analytics — revenue + popularity
-      get-order-status/             GET /order — single order lookup (optional)
+      cafe-order-processor/         POST / - place order + email
+      get-orders/                   GET / - list/search orders
+      update-order-status/          PUT / - update status + ready notification
+      get-analytics/                GET /analytics - revenue + popularity
+      get-order-status/             GET /order - single order lookup (optional)
     README.md                       API Gateway setup guide
   README.md                         This file
   SECURITY.md                       Sanitization & credentials guide
